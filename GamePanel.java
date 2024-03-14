@@ -10,7 +10,7 @@ import javax.swing.Timer;
 
 import javax.swing.JPanel;
 
-public class GamePanel extends JPanel  implements ActionListener{
+public class GamePanel extends JPanel  implements ActionListener {
 
     static final int SCREEN_WIDTH = 800;
     static final int SCREEN_HEIGHT = 600;
