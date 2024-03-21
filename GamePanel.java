@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
 import javax.swing.Timer;
@@ -24,8 +26,10 @@ public class GamePanel extends JPanel  implements ActionListener {
     final int DELAY = 1000 / FPS;
     Timer timer;
 
-    static Grid grid = new Grid(ROWS, COLS);
+    static Grid grid;
     static int NUMBER_OF_COLOURS;
+
+    boolean restart;
 
 
     public static void main(String[] args) {
@@ -36,23 +40,50 @@ public class GamePanel extends JPanel  implements ActionListener {
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT)); // set window size
         this.setBackground(Color.black);
         this.setDoubleBuffered(true); // all drawing from this component will be done in an offscreen painting buffer -> improves performance
+
+        this.setFocusable(true); // to use keyAdapter
+        this.requestFocusInWindow();
+        this.addKeyListener(new MyKeyAdapter());
     }
 
     public void start() {
-        System.out.println("game loop running, fps: " + FPS);
-        timer = new Timer(DELAY, this);
-        timer.setRepeats(true);
-        timer.start();
+        restart = false;
 
+        System.out.println("game loop running, fps: " + FPS);
+        if (timer == null) {
+            timer = new Timer(DELAY, this);
+            timer.setRepeats(true);
+            timer.start();
+        }
+
+        grid = new Grid(ROWS, COLS);
         new Colors();
         NUMBER_OF_COLOURS = Colors.size();
         grid.randomize(NUMBER_OF_COLOURS);
     }
 
+    public class MyKeyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            // System.out.println(e.getKeyCode());
+            switch (e.getKeyCode()) {
+                case 32:
+                    restart = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
     // called when the timer ends
     public void actionPerformed(ActionEvent event) {
         // update the screen
-        System.out.println("starting new cycle");
+        //System.out.println("starting new cycle");
+
+        if (restart) start();
+
         updateGrid();
         repaint(); // to call paintComponent
 
